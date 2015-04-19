@@ -8,6 +8,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', 'graph.views.graph', name='graph'),
+    
     url(r'^website-form/', 'graph.views.website_form', name='website-form'),
     url(r'^website', WebsiteListView.as_view(), name='website-list'),
 )

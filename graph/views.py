@@ -7,6 +7,9 @@ from django.utils import timezone
 
 from graph.models import Website
 
+def graph(request):
+    return render(request, 'graph/graph.html')
+    
 def website_form(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
