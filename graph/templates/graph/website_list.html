@@ -1,0 +1,8 @@
+<h1>Websites</h1>
+<ul>
+{% for website in object_list %}
+    <li>{{ website.name }} - {{ website.url }} - {{ website.rss_url }}</li>
+{% empty %}
+    <li>No websites yet.</li>
+{% endfor %}
+</ul>
