@@ -107,6 +107,7 @@ import urllib
 from urllib import request
 import xml.etree.ElementTree as ET
 import email.utils, datetime
+from django.core import serializers
 
 from progress.bar import Bar
 
@@ -136,6 +137,13 @@ class Website(models.Model):
     
     def __str__(self):
         return self.name.encode('utf-8')
+        
+    def json_attributes(self): # Website is the type_node
+        return {
+            "id": self.id,
+            "node_ids": list(self.article_set.values_list('id', flat=True).distinct()),
+            #"color": "#FFFFFF",
+        }
     
     # Download the rss xml of a website, and extract url of articles from it,
     #   then create object Article if not already present in DB
@@ -206,6 +214,15 @@ class Article(models.Model):
     
     def __str__(self):
         return self.title
+        
+    def json_attributes(self): # Article is a form of Node, with Concept
+        return {
+            "id": self.id,
+            "name": str(self),
+            "importance": 1,
+            "depth": 0,
+            "display_name": False,
+        }
     
     def call_api(self, endpoint, options = {}):
         data = {
@@ -216,9 +233,9 @@ class Article(models.Model):
         }
         data.update(options)
         url = endpoint + "?" + urllib.parse.urlencode(data)
-        with request.urlopen(url) as f:
-            c = f.read().decode('utf-8')
-        #c = RES_API
+        #with request.urlopen(url) as f:
+        #    c = f.read().decode('utf-8')
+        c = RES_API
         return c
     
     # Make queries to AlchemyAPI to complete Article model
@@ -258,7 +275,7 @@ class Article(models.Model):
             if False:
                 display_xml(concepts)
                 
-            self.content = concepts.find('text')
+            self.content = concepts.find('text').text
             self.save()
             
             print("Langage detected:", concepts.find('language').text)
@@ -288,6 +305,15 @@ class Concept(models.Model):
     
     def __str__(self):
         return self.name
+        
+    def json_attributes(self): # Article is a form of Node, with Concept
+        return {
+            "id": -self.id,
+            "name": str(self),
+            "importance": 1,
+            "depth": 0,
+            "display_name": True,
+        }
 
 class ArticleConcept(models.Model):
     article = models.ForeignKey(Article)
@@ -296,3 +322,12 @@ class ArticleConcept(models.Model):
     
     def __str__(self):
         return str(self.article) + " <-"+str(self.relevance)+"-> " + str(self.concept)
+        
+    def json_attributes(self): # Article is a form of Node, with Concept
+        return {
+            "id": self.id,
+            "name": str(self),
+            "node_from_id": self.article_id,
+            "node_to_id": -self.concept_id,
+            "strengh": self.relevance,
+        }

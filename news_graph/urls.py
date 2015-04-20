@@ -13,4 +13,3 @@ urlpatterns = patterns('',
     url(r'^website-form/', 'graph.views.website_form', name='website-form'),
     url(r'^website', WebsiteListView.as_view(), name='website-list'),
 )
-    

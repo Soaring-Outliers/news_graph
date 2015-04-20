@@ -5,10 +5,41 @@ from graph.forms import WebsiteForm
 from django.views.generic.list import ListView
 from django.utils import timezone
 
-from graph.models import Website
+from graph.models import Website, Article, Concept, ArticleConcept
 
 def graph(request):
-    return render(request, 'graph/graph.html')
+    from .helpers import to_dict, to_json
+    concept_type = {
+        "id": 0, 
+        "color": "#FFAAFF", 
+        "node_ids": [-id for id in Concept.objects.values_list('id', flat=True)],
+    }
+    articleconcept_type = {
+        "id": 1, 
+        "color": "#FFAAFF", 
+        "link_ids": list(ArticleConcept.objects.values_list('id', flat=True)),
+    }
+    data_for_graph = {
+        "nodes-by-id": to_json(Article.objects.all(), Concept.objects.all()),
+        "links-by-id": to_json(ArticleConcept.objects.all()),
+        "type-nodes-by-id": to_json(Website.objects.all(), [concept_type]),
+        "type-links-by-id": to_json([articleconcept_type]),
+        "modifiable-node-ids": "[]",
+    }
+    websites = Website.objects.all()
+    articles = Article.objects.all()
+    concepts = Concept.objects.all()
+    articleconcepts = ArticleConcept.objects.all()
+            
+    return render(request, 'graph/graph.html', {
+        'data_for_graph': data_for_graph,
+        'websites': websites,
+        'articles': articles,
+        'concepts': concepts,
+        'articleconcepts': articleconcepts,
+        'concept_type': concept_type,
+        'articleconcept_type': articleconcept_type,
+    })
     
 def website_form(request):
     # if this is a POST request we need to process the form data

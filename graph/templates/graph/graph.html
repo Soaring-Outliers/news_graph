@@ -1,19 +1,113 @@
-<html>
-<head>
-<style type="text/css">
-  #container {
-    max-width: 400px;
-    height: 400px;
-    margin: auto;
-  }
-</style>
-</head>
-<body>
-<div id="container"></div>
-{% load staticfiles %}
-<script src="{% static "graph/js/sigma.min.js" %}"></script>
-<script src="{% static "graph/js/sigma.parsers.json.min.js" %}"></script>
-<script language="javascript">var STATIC_URL = "{{ STATIC_URL }}";</script>
-<script src="{% static "graph/js/graph.js" %}"></script>
-</body>
-</html>
+{% extends "news_graph/base.html" %}
+
+    {% block header %}
+    <style type="text/css">
+      #container {
+        max-width: 400px;
+        height: 400px;
+        margin: auto;
+      }
+    </style>
+    {% load staticfiles %}
+    <link type="text/css" rel="stylesheet" href="{% static "graph/css/jquery.mCustomScrollbar.css" %}" />
+    <link type="text/css" rel="stylesheet" href="{% static "graph/css/graph.css" %}" />
+    {% endblock %}
+    
+    
+        {% block content %}
+
+
+<div class="hidden-smallphone">
+  <div class="fullscreen">
+    <div class="background">
+      <div id="js-graph"
+        {% for key, json in data_for_graph.items %}
+          data-{{ key }}="{{ json }}"
+        {% endfor %}
+        max_node_size=6
+      />
+    </div>
+    <div class="foreground smalladd center down">
+      <!--<button class="btn" id="circular">Circular layout</button>-->
+      <button class="btn btn-mini btn-success" id="forceAtlas">Stop layout</button>
+      <!--<button class="btn" id="fishEye">Put Fish Eye ON</button-->
+    </div>
+    <div class="foreground smalladd right up" id="type_node_filters">
+      <span class="tiny-title">Websites:</span><br>
+      {% for e in websites %}
+        <span class="tiny-button type_node_{{ e.id }}" value="{{ e.id }}" href="#" style="color: #FFF">
+          {{ e.name }}
+        </span><br>
+      {% endfor %}
+      <span class="tiny-title">Other entities:</span><br>
+      <span class="tiny-button type_node_{{ concept_type.id }}" value="{{ concept_type.id }}" href="#" style="color: #FFF">
+        {{ e }}
+      </span><br>
+    </div>
+    <div class="foreground smalladd right down" id="type_link_filters">
+      <span class="tiny-title">Link natures:</span><br>
+      <span class="tiny-button type_link_{{ articleconcept_type.id }}" value="{{ articleconcept_type.id }}" href="#" style="color: #FFF">
+        {{ articleconcept_type.name }}
+      </span><br>
+    </div>
+    <div class="foreground smalladd left up">
+      <div id="searchForm" class="ui-widget">
+        <div class="input-prepend btn-transp">
+          <span class="add-on"><span class="icon-search"></span></span>
+          <input type="search" id="searchNode" placeholder="Search..." class="span2" />
+        </div>
+      </div>
+    </div>
+    <div class="foreground smalladd left down" style="bottom: -2px">
+      <small>By <a href="mailto:juleffel@openaliasbox.org">Juleffel</a> & <a href="mailto:pidupuis@openaliasbox.org">Pidupuis</a>, using <a href=http://sigmajs.org/ target=_blank>sigmajs</a>.</small>
+    </div>
+    {% for e in websites %}
+      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar">
+        {{ e.name }}
+      </div>
+      <div class="foreground mainadd right up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
+        {{ e.url }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!--div class="visible-smallphone">
+  <div class="container">
+    <h2 class="center"><%= Character.model_name.human.pluralize.titleize %></h2>
+    <% @characters.each do |character| %>
+    <% @character = character %>
+    <div class="well" id="mobile_node_desc_<%= character.id %>">
+      <div>
+        <%= render "characters/description" %>
+      </div>
+      <div>
+        <%= render "characters/links_mobile" %>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div-->
+
+
+        {% endblock %}
+
+{% block js %}
+<script src="{% static "graph/js/sigma.js" %}"></script>
+<!--script src="{% static "graph/js/sigma.parsers.json.min.js" %}"></script-->
+<script src="{% static "graph/js/sigma.utils.js" %}"></script>
+<script src="{% static "graph/js/jquery.mCustomScrollbar.concat.min.js" %}"></script>
+<script src="{% static "graph/js/sigma.forceatlas.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.loadData.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.searchNode.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.fisheye.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.circularLayout.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.changeColors.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.selectNodes.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.buttonFilters.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.nodesInfo.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.layoutButtons.js" %}"></script>
+<script src="{% static "graph/js/graph/sigmajs.events.js" %}"></script>
+<script src="{% static "graph/js/graph/cerebro.js" %}"></script>
+{% endblock %}
+
