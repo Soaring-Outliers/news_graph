@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<html>
+<head>
+    <title>{% block title %} News graph {% endblock %}</title>
+    
+    
+    <link type="text/css" rel="stylesheet" href="{% static "graph/css/bootstrap.min.css" %}" />
+    <link type="text/css" rel="stylesheet" href="{% static "graph/css/bootstrap-theme.min.css" %}" />
+    
+    <script language="javascript">var STATIC_URL = "{{ STATIC_URL }}";</script>
+    <script src="{% static "graph/js/jquery.min.js" %}"></script>
+    <script src="{% static "graph/js/bootstrap.min.js" %}"></script>
+    
+    {% block header %}
+    {% endblock %}
+    
+</head>
+<body>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
