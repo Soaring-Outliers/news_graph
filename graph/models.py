@@ -233,9 +233,9 @@ class Article(models.Model):
         }
         data.update(options)
         url = endpoint + "?" + urllib.parse.urlencode(data)
-        #with request.urlopen(url) as f:
-        #    c = f.read().decode('utf-8')
-        c = RES_API
+        with request.urlopen(url) as f:
+            c = f.read().decode('utf-8')
+        #c = RES_API
         return c
     
     # Make queries to AlchemyAPI to complete Article model

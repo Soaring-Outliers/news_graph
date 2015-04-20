@@ -63,5 +63,4 @@ db.sqlite3
 # C9
 .c9
 
-# bower
-bower_components
+*~
