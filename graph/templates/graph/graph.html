@@ -24,7 +24,7 @@
         {% for key, json in data_for_graph.items %}
           data-{{ key }}="{{ json }}"
         {% endfor %}
-        max_node_size=6
+        max_node_size=3
       />
     </div>
     <div class="foreground smalladd center down">
@@ -41,13 +41,13 @@
       {% endfor %}
       <span class="tiny-title">Other entities:</span><br>
       <span class="tiny-button type_node_{{ concept_type.id }}" value="{{ concept_type.id }}" href="#" style="color: #FFF">
-        {{ e }}
+        Concepts
       </span><br>
     </div>
     <div class="foreground smalladd right down" id="type_link_filters">
       <span class="tiny-title">Link natures:</span><br>
       <span class="tiny-button type_link_{{ articleconcept_type.id }}" value="{{ articleconcept_type.id }}" href="#" style="color: #FFF">
-        {{ articleconcept_type.name }}
+        Concepts
       </span><br>
     </div>
     <div class="foreground smalladd left up">
@@ -61,7 +61,15 @@
     <div class="foreground smalladd left down" style="bottom: -2px">
       <small>By <a href="mailto:juleffel@openaliasbox.org">Juleffel</a> & <a href="mailto:pidupuis@openaliasbox.org">Pidupuis</a>, using <a href=http://sigmajs.org/ target=_blank>sigmajs</a>.</small>
     </div>
-    {% for e in websites %}
+    {% for e in articles %}
+      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar">
+        {{ e.name }}
+      </div>
+      <div class="foreground mainadd right up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
+        {{ e.url }}
+      </div>
+    {% endfor %}
+    {% for e in concepts %}
       <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar">
         {{ e.name }}
       </div>
