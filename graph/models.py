@@ -206,7 +206,6 @@ class Article(models.Model):
     title = models.CharField(max_length=511)
     description = models.TextField(null=True, blank=True)
     date = models.DateTimeField(null=True, blank=True)
-    content = models.TextField(null=True, blank=True)
     
     entities_xml = models.TextField(null=True, blank=True)
     concepts_xml = models.TextField(null=True, blank=True)
@@ -215,11 +214,14 @@ class Article(models.Model):
     def __str__(self):
         return self.title
         
+    class Meta:
+        ordering = ['-date']
+        
     def json_attributes(self): # Article is a form of Node, with Concept
         return {
             "id": self.id,
             "name": str(self),
-            "importance": 1,
+            "importance": 2,
             "depth": 0,
             "display_name": False,
         }
@@ -275,7 +277,6 @@ class Article(models.Model):
             if False:
                 display_xml(concepts)
                 
-            self.content = concepts.find('text').text
             self.save()
             
             print("Langage detected:", concepts.find('language').text)
@@ -297,6 +298,25 @@ class Article(models.Model):
                     ac.save()
         else:
             print("Error: url is required.")
+        
+    def scored_articles(self):
+        acs = self.articleconcept_set.all()
+        concepts = []
+        articles = {}
+        for ac in acs:
+            concepts.append([ac.concept, ac.relevance])
+        for concept, relevance in concepts:
+            for ac in concept.articleconcept_set.all():
+                id = ac.article_id
+                if id != self.id:
+                    if not id in articles:
+                        articles[id] = [relevance + ac.relevance, ac.article, [concept]]
+                    else:
+                        articles[id][0] += relevance + ac.relevance
+                        articles[id][2].append(concept)
+        articles = [d for i, d in articles.items()]
+        articles.sort(key=lambda t: t[0], reverse=True)
+        return articles
 
 
 class Concept(models.Model):
@@ -322,6 +342,12 @@ class ArticleConcept(models.Model):
     
     def __str__(self):
         return str(self.article) + " <-"+str(self.relevance)+"-> " + str(self.concept)
+        
+    class Meta:
+        ordering = ['-relevance']
+        
+    def relpercent(self):
+        return int(self.relevance*100)
         
     def json_attributes(self): # Article is a form of Node, with Concept
         return {

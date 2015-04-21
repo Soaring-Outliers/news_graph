@@ -646,7 +646,7 @@ sigma.classes.Cascade = function() {
 			for (var b = a.nodes.length, c = 0; c++ < h.p.labelsSpeed && h.currentLabelIndex < b; )
 				if (h.isOnScreen(a.nodes[h.currentLabelIndex])) {
 					var d = a.nodes[h.currentLabelIndex++], l = f;
-					if (d.displaySize >= h.p.labelThreshold || d.forceLabel) {
+					if ((d.displaySize >= h.p.labelThreshold || d.forceLabel) && !d.attr.temp.forceNoLabel) {
 						var s = "fixed" == h.p.labelSize ? h.p.defaultLabelSize : h.p.labelSizeRatio * d.displaySize;
 						l.font = h.p.fontStyle + s + "px " + h.p.font;
 						l.fillStyle = "node" == h.p.labelColor ? d.color || h.p.defaultNodeColor : h.p.defaultLabelColor;

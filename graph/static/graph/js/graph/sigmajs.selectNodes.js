@@ -1,14 +1,15 @@
 /* Highlight a node and forced it visible if it is hidden. */
 sigma.publicPrototype.selectNodes = function (nodes) {
   var sigInst = this;
-  var node;
+  var node=null;
   sigInst.iterNodes(function (n) {
     // Iterate node to find the node clicked
     if (n.id == nodes[0]) {
       node = n;
     }
   });
-  if (node.hidden) {
+  
+  if (node && node.hidden) {
     node.attr.temp.forceVisible = true;
     sigInst.updateTypeNodeFilter();
   }

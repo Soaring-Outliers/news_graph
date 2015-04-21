@@ -3,7 +3,7 @@ var namesForSearchBox = []; // Variable to store the node names which will be us
 
 // Update according to filter selection
 sigma.publicPrototype.updateSearchBox = function (mapFilter) {
-  /*var sigInst = this;
+  var sigInst = this;
   sigInst.deselectNodes();
   namesForSearchBox = [];
   sigInst.iterNodes(function (n) { // Iterate nodes to add their names to the search box
@@ -14,11 +14,11 @@ sigma.publicPrototype.updateSearchBox = function (mapFilter) {
   var $searchNode = $(searchNodeSelector);
   $searchNode.autocomplete({
     source: namesForSearchBox
-  });*/
+  });
 };
 
 sigma.publicPrototype.searchNode = function () {
-  /*var sigInst = this;
+  var sigInst = this;
   var $searchNode = $(searchNodeSelector);
   if ($searchNode.length > 0) {
     // Autocompletion parameters
@@ -37,7 +37,7 @@ sigma.publicPrototype.searchNode = function () {
         }
       }
     });
-  }*/
+  }
 };
 
 sigma.publicPrototype.searchNodeValue = function (val) {

@@ -9,6 +9,7 @@
       }
     </style>
     {% load staticfiles %}
+    <link type="text/css" rel="stylesheet" href="{% static "graph/css/jquery-ui.min.css" %}" />
     <link type="text/css" rel="stylesheet" href="{% static "graph/css/jquery.mCustomScrollbar.css" %}" />
     <link type="text/css" rel="stylesheet" href="{% static "graph/css/graph.css" %}" />
     {% endblock %}
@@ -16,7 +17,7 @@
     
         {% block content %}
 
-
+{% load helpers %}
 <div class="hidden-smallphone">
   <div class="fullscreen">
     <div class="background">
@@ -62,19 +63,57 @@
       <small>By <a href="mailto:juleffel@openaliasbox.org">Juleffel</a> & <a href="mailto:pidupuis@openaliasbox.org">Pidupuis</a>, using <a href=http://sigmajs.org/ target=_blank>sigmajs</a>.</small>
     </div>
     {% for e in articles %}
-      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar">
-        {{ e.name }}
+      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
+        {% with scored_articles=e.scored_articles %}
+        {% if scored_articles %}
+        <h4>Linked articles</h4>
+        <ul>
+        {% for score, article, linked_concepts in e.scored_articles %}
+          <li>
+            <h5><a href="#" class="select-node" node="n{{ article.id }}">{{ article.title }}</a> (Relevance score: {{ score|floatformat:2 }})</h5>
+            <p>{{ article.description|sanitize }}</p>
+            <p>
+              Common tags:
+              {% for c in linked_concepts %}
+              <a href="#" class="select-node" node="n-{{ c.id }}">{{ c.name }}</a>
+              {% if not forloop.last %}
+              & 
+              {% endif %}
+              {% endfor %}
+            </p>
+          </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <h4>Tags</h4>
+        <ul>
+        {% for l in e.articleconcept_set.all %}
+          <li>
+            (Relevance: {{ l.relpercent }}%) <a href="#" class="select-node" node="n-{{ l.concept.id }}">{{ l.concept.name }}</a>
+          </li>
+        {% endfor %}
+        </ul>
       </div>
       <div class="foreground mainadd right up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
-        {{ e.url }}
+        <h4>{{ e.title }}</h4>
+        <p>{{ e.description|sanitize }}</p>
+        <p><a href="{{ e.url }}" target="_blank">{{ e.url }}</a></p>
       </div>
     {% endfor %}
     {% for e in concepts %}
-      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar">
-        {{ e.name }}
+      <div class="foreground mainadd left all nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
+        <ul>
+        {% for l in e.articleconcept_set.all %}
+          <li>
+            <h5><a href="#" class="select-node" node="n{{ l.article.id }}">{{ l.article.title }}</a> (Relevance: {{ l.relpercent }}%)</h5>
+            <p>{{ l.article.description|sanitize }}</p>
+          </li>
+        {% endfor %}
+        </ul>
       </div>
-      <div class="foreground mainadd right up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
-        {{ e.url }}
+      <div class="foreground mainadd right up nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
+        <h4>{{ e.name }}</h4>
       </div>
     {% endfor %}
   </div>
@@ -101,10 +140,11 @@
         {% endblock %}
 
 {% block js %}
+<script src="{% static "graph/js/jquery.mCustomScrollbar.concat.min.js" %}"></script>
+<script src="{% static "graph/js/jquery-ui.min.js" %}"></script>
 <script src="{% static "graph/js/sigma.js" %}"></script>
 <!--script src="{% static "graph/js/sigma.parsers.json.min.js" %}"></script-->
 <script src="{% static "graph/js/sigma.utils.js" %}"></script>
-<script src="{% static "graph/js/jquery.mCustomScrollbar.concat.min.js" %}"></script>
 <script src="{% static "graph/js/sigma.forceatlas.js" %}"></script>
 <script src="{% static "graph/js/graph/sigmajs.loadData.js" %}"></script>
 <script src="{% static "graph/js/graph/sigmajs.searchNode.js" %}"></script>
@@ -117,5 +157,6 @@
 <script src="{% static "graph/js/graph/sigmajs.layoutButtons.js" %}"></script>
 <script src="{% static "graph/js/graph/sigmajs.events.js" %}"></script>
 <script src="{% static "graph/js/graph/cerebro.js" %}"></script>
+<script src="{% static "graph/js/graph.js" %}"></script>
 {% endblock %}
 

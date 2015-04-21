@@ -19,7 +19,7 @@ sigma.publicPrototype.loadData = function ($data_container) {
       var g_node = {
         label: node.name,
         color: color,
-        size: node.importance
+        size: node.importance,
       }; // Create basic node
       
       /* Add other attributes to node */
@@ -28,6 +28,7 @@ sigma.publicPrototype.loadData = function ($data_container) {
       g_node['temp']['type_node_id'] = type_node_id;
       g_node['temp']['true_color'] = color;
       g_node['temp']['depth'] = node.depth;
+      g_node['temp']['forceNoLabel'] = !node.display_name;
 
       sigInst.addNode('n' + node.id, g_node);
       //console.log("addNode:", g_node);

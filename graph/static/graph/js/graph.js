@@ -1,6 +1,3 @@
-sigma.parsers.json(STATIC_URL+'graph/data/data.json', {
-    container: 'container',
-    settings: {
-      defaultNodeColor: '#ec5148'
-    }
-  });
+$(document).ready(function() {
+  //$(".js-scrollbar").mCustomScrollbar();
+});
