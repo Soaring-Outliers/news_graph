@@ -48,7 +48,7 @@ sigma.publicPrototype.loadData = function ($data_container) {
         targetID: link.node_to_id,
         label: link.name,
         color: color,
-        weight: link.strengh,
+        weight: link.strengh * 5,
       }; // Create basic edge
 
       /* Add other attributes to node */

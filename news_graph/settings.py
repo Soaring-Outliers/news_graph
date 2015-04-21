@@ -24,7 +24,6 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -36,7 +35,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'graph'
+    'graph',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,10 +57,10 @@ WSGI_APPLICATION = 'news_graph.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #}
 }
 
 # Internationalization
@@ -76,6 +75,16 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+import dj_database_url
+#DATABASES['default'] =  dj_database_url.config()
+DATABASES = {'default': dj_database_url.parse('postgres://newsgraphuser:newsgraphmdp@localhost/newsgraphdb')}
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
 
 
 # Static files (CSS, JavaScript, Images)
