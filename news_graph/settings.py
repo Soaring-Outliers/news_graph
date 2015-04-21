@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'graph',
+    #'django_cron'
 )
 
 MIDDLEWARE_CLASSES = (
