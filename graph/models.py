@@ -132,11 +132,11 @@ def display_xml(xml_tree):
 
 class Website(models.Model):
     name = models.CharField(max_length=255)
-    url = models.URLField(max_length=255)
+    url = models.URLField(max_length=255, blank=True)
     rss_url = models.URLField(max_length=255)
     
     def __str__(self):
-        return self.name.encode('utf-8')
+        return self.name
         
     def json_attributes(self): # Website is the type_node
         return {
@@ -173,23 +173,28 @@ class Website(models.Model):
                     # Try get from DB
                     a = Article.objects.get(rss_url=link)
                 except Article.DoesNotExist:
-                    # Not in DB, so we resolve the url because a lot of rss feeds give custom url redirecting to true articles
-                    # Cookies must be handled because else they redirect you into an infinite loop
-                    with request.build_opener(request.HTTPCookieProcessor).open(link) as f:
-                        title = item_node.find('title').text
-                        desc = item_node.find('description').text
-                        pubDate = item_node.find('pubDate').text
-                        if pubDate:
-                            # rfc822 -> datetime
-                            # http://stackoverflow.com/questions/1568856/how-do-i-convert-rfc822-to-a-python-datetime-object
-                            pubDate = datetime.datetime.utcfromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubDate)))
-                        try:
-                            a = Article(title=title, description=desc, url=f.geturl(), rss_url=link, website=self, date=pubDate)
+                    title = item_node.find('title').text
+                    desc = item_node.find('description').text
+                    pubDate = item_node.find('pubDate').text
+                    if pubDate:
+                        # rfc822 -> datetime
+                        # http://stackoverflow.com/questions/1568856/how-do-i-convert-rfc822-to-a-python-datetime-object
+                        pubDate = datetime.datetime.utcfromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubDate)))
+                        
+                    try:
+                        a = Article(title=title, description=desc, url="", rss_url=link, website=self, date=pubDate)
+                        a.save()
+                        
+                        # Not in DB, so we resolve the url because a lot of rss feeds give custom url redirecting to true articles
+                        # Cookies must be handled because else they redirect you into an infinite loop
+                        with request.build_opener(request.HTTPCookieProcessor).open(link) as f:
+                            a.url=f.geturl()
                             a.fill_alchemy()
                             a.save()
-                        except Exception as e:
-                            print("Error:",e)
-                            a = None
+                    except Exception as e:
+                        print("Error:",e)
+                        a = None
+                        
                 if a:
                     links.append(a)
                 bar.next()
