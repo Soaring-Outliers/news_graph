@@ -7,7 +7,8 @@ def to_dict(*arrays):
                 d = obj
             else:
                 d = obj.json_attributes()
-            res[int(d["id"])] = d
+            if d:
+                res[int(d["id"])] = d
     return res
 def to_json(*arrays):
     return json.dumps(to_dict(*arrays))

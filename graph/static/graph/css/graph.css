@@ -25,11 +25,17 @@
           transition: 1s;
 }
 .fullscreen.to-right .background {
+  /*
   -webkit-transform: scale(0.5) translateX(50%) translateY(50%);
      -moz-transform: scale(0.5) translateX(50%) translateY(50%);
       -ms-transform: scale(0.5) translateX(50%) translateY(50%);
        -o-transform: scale(0.5) translateX(50%) translateY(50%);
-          transform: scale(0.5) translateX(50%) translateY(50%);
+          transform: scale(0.5) translateX(50%) translateY(50%);*/
+  -webkit-transform: scale(0.5) translateX(-50%) translateY(50%);
+     -moz-transform: scale(0.5) translateX(-50%) translateY(50%);
+      -ms-transform: scale(0.5) translateX(-50%) translateY(50%);
+       -o-transform: scale(0.5) translateX(-50%) translateY(50%);
+          transform: scale(0.5) translateX(-50%) translateY(50%);
 }
 
 .fullscreen .smalladd,
@@ -107,16 +113,16 @@
 }
 .fullscreen .foreground.mainadd.left {
   left: -50%;
-  width: 50%;
+  width: 45%;
 }
 .fullscreen .foreground.smalladd.left,
 .fullscreen .foreground.mainadd.left.active {
   left: 10px;
 }
-/*.fullscreen .foreground.mainadd.left.up {
-  width: 65%;
-  height: 40%;
-}*/
+.fullscreen .foreground.mainadd.all {
+  width: 45%;
+  height: 95%;
+}
 .fullscreen .foreground.center {
   width: 100%;
   right: 0;
@@ -132,14 +138,6 @@
 }
 .fullscreen .right {
   text-align: right;
-}
-/*.fullscreen .foreground.mainadd.right.up {
-  width: 30%;
-  height: 40%;
-}*/
-.fullscreen .foreground.mainadd.left.all {
-  width: 50%;
-  height: 95%;
 }
 .fullscreen .foreground.smalladd {
   opacity: 1;

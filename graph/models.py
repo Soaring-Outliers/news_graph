@@ -108,8 +108,10 @@ from urllib import request
 import xml.etree.ElementTree as ET
 import email.utils, datetime
 from django.core import serializers
+from django.db.models import Count
 
 from progress.bar import Bar
+
 
 def display_xml(xml_tree):
     nodes = [(0,xml_tree)]
@@ -301,6 +303,7 @@ class Article(models.Model):
                     # Make the link between Article and Concept (with relevance)
                     ac = ArticleConcept(article = self, concept = c, relevance = relevance)
                     ac.save()
+                    c.save()
         else:
             print("Error: url is required.")
         
@@ -327,15 +330,21 @@ class Article(models.Model):
 class Concept(models.Model):
     articles = models.ManyToManyField(Article, through='ArticleConcept')
     name = models.CharField(max_length=255)
+    articles_count = models.IntegerField()
     
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        self.articles_count = self.articleconcept_set.count()
+        super(Concept, self).save(*args, **kwargs)
         
     def json_attributes(self): # Article is a form of Node, with Concept
+        
         return {
             "id": -self.id,
             "name": str(self),
-            "importance": 1,
+            "importance": 1 + self.articles_count*0.1,
             "depth": 0,
             "display_name": True,
         }
@@ -357,7 +366,7 @@ class ArticleConcept(models.Model):
     def json_attributes(self): # Article is a form of Node, with Concept
         return {
             "id": self.id,
-            "name": str(self),
+            "name": str(self.id),# str(self),
             "node_from_id": self.article_id,
             "node_to_id": -self.concept_id,
             "strengh": self.relevance,

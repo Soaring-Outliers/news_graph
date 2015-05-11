@@ -6,29 +6,61 @@ from django.views.generic.list import ListView
 from django.utils import timezone
 
 from graph.models import Website, Article, Concept, ArticleConcept
+from django.db.models import Count
+        
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+import time
+def tim(t, text):
+    logger.error(text)
+    logger.error(time.time()-t)
+    #time.sleep(3)
+    return time.time()
+    
 
 def graph(request):
     from .helpers import to_dict, to_json
+    import time
+    t=time.time()
     concept_type = {
         "id": 0, 
         "color": "#FF6699", 
-        "node_ids": [-id for id in Concept.objects.values_list('id', flat=True)],
+        "node_ids": [-id for id in Concept.objects.filter(articles_count__gt=1).values_list('id', flat=True)],
     }
+    t=tim(t, '#################### Concept_type ok! #####################')
     articleconcept_type = {
         "id": 1, 
         "color": "#FFAAAA", 
-        "link_ids": list(ArticleConcept.objects.values_list('id', flat=True)),
+        "link_ids": list(ArticleConcept.objects.prefetch_related('concept').filter(concept__articles_count__gt=1).values_list('id', flat=True)),
     }
+    t=tim(t, '#################### ArticleConcept_type ok! #####################')
+    
+    nodes_by_id = to_json(Article.objects.all(), Concept.objects.all())
+    t=tim(t, '#################### nodes_by_id ok! #####################')
+    links_by_id = to_json(ArticleConcept.objects.all())
+    t=tim(t, '#################### links_by_id ok! #####################')
+    type_nodes_by_id = to_json(Website.objects.all(), [concept_type])
+    t=tim(t, '#################### type_nodes_by_id ok! #####################')
+    type_links_by_id = to_json([articleconcept_type])
+    t=tim(t, '#################### type_links_by_id ok! #####################')
     data_for_graph = {
-        "nodes-by-id": to_json(Article.objects.all(), Concept.objects.all()),
-        "links-by-id": to_json(ArticleConcept.objects.all()),
-        "type-nodes-by-id": to_json(Website.objects.all(), [concept_type]),
-        "type-links-by-id": to_json([articleconcept_type]),
+        "nodes-by-id": nodes_by_id,
+        "links-by-id": links_by_id,
+        "type-nodes-by-id": type_nodes_by_id,
+        "type-links-by-id": type_links_by_id,
         "modifiable-node-ids": "[]",
     }
+    t=tim(t, '#################### DataForGraph ok! #####################')
     websites = Website.objects.all()
+    t=tim(t, '#################### Websites ok! #####################')
     articles = Article.objects.prefetch_related('articleconcept_set__concept__articleconcept_set__article').all()
+    t=tim(t, '#################### Articles ok! #####################')
     concepts = Concept.objects.prefetch_related('articleconcept_set__article').all()
+    t=tim(t, '#################### Concepts ok! #####################')
     #articleconcepts = ArticleConcept.objects.all()
             
     return render(request, 'graph/graph.html', {

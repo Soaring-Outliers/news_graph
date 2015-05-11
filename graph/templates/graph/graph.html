@@ -25,7 +25,7 @@
         {% for key, json in data_for_graph.items %}
           data-{{ key }}="{{ json }}"
         {% endfor %}
-        max_node_size=3
+        max_node_size=5
       ></div>
     </div>
     <div class="foreground smalladd center down">
@@ -42,13 +42,13 @@
       {% endfor %}
       <span class="tiny-title">Other entities:</span><br>
       <span class="tiny-button type_node_{{ concept_type.id }}" value="{{ concept_type.id }}" href="#" style="color: #FFF">
-        Concepts
+        Tags
       </span><br>
     </div>
     <div class="foreground smalladd right down" id="type_link_filters">
       <span class="tiny-title">Link natures:</span><br>
       <span class="tiny-button type_link_{{ articleconcept_type.id }}" value="{{ articleconcept_type.id }}" href="#" style="color: #FFF">
-        Concepts
+        Tags
       </span><br>
     </div>
     <div class="foreground smalladd left up">
@@ -63,56 +63,46 @@
       <small>By <a href="mailto:juleffel@openaliasbox.org">Juleffel</a> & <a href="mailto:pidupuis@openaliasbox.org">Pidupuis</a>, using <a href=http://sigmajs.org/ target=_blank>sigmajs</a>.</small>
     </div>
     {% for e in articles %}
-      <div class="foreground mainadd left all nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
+      <div class="foreground mainadd right all nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
         {% with scored_articles=e.scored_articles %}
         {% if scored_articles %}
-        <h4>Linked articles</h4>
-        <ul>
+        <h4>Similar articles</h4>
         {% for score, article, linked_concepts in e.scored_articles %}
-          <li>
-            <h5><a href="#" class="select-node" node="n{{ article.id }}">{{ article.title }}</a> (Relevance score: {{ score|floatformat:2 }})</h5>
-            <p>{{ article.description|sanitize }}</p>
-            <p>
-              Common tags:
-              {% for c in linked_concepts %}
-              <a href="#" class="select-node" node="n-{{ c.id }}">{{ c.name }}</a>
-              {% if not forloop.last %}
-              & 
-              {% endif %}
-              {% endfor %}
-            </p>
-          </li>
+          <h5><a href="#" class="select-node" node="n{{ article.id }}">{{ article.title }}</a> (Relevance score: {{ score|floatformat:2 }})</h5>
+          <p>{{ article.description|sanitize }}</p>
+          <p>
+            Common tags:
+            {% for c in linked_concepts %}
+            <a href="#" class="select-node" node="n-{{ c.id }}">{{ c.name }}</a>
+            {% if not forloop.last %}
+            & 
+            {% endif %}
+            {% endfor %}
+          </p>
+          <hr />
         {% endfor %}
-        </ul>
         {% endif %}
         {% endwith %}
-        <h4>Tags</h4>
-        <ul>
-        {% for l in e.articleconcept_set.all %}
-          <li>
-            (Relevance: {{ l.relpercent }}%) <a href="#" class="select-node" node="n-{{ l.concept.id }}">{{ l.concept.name }}</a>
-          </li>
-        {% endfor %}
-        </ul>
       </div>
-      <div class="foreground mainadd right up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
+      <div class="foreground mainadd left up nodeinfo n{{ e.id }} js-scrollbar" node="n{{ e.id }}">
         <h4>{{ e.title }}</h4>
         <p>{{ e.description|sanitize }}</p>
         <p><a href="{{ e.url }}" target="_blank">{{ e.url }}</a></p>
+        <h4>Tags</h4>
+        ({% for l in e.articleconcept_set.all %}
+          <a href="#" class="select-node" node="n-{{ l.concept.id }}">{{ l.concept.name }}</a> ({{ l.relpercent }}%){% if not forloop.last %}, {% endif %}
+        {% endfor %})
       </div>
     {% endfor %}
     {% for e in concepts %}
-      <div class="foreground mainadd left all nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
-        <ul>
+      <div class="foreground mainadd right all nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
         {% for l in e.articleconcept_set.all %}
-          <li>
-            <h5><a href="#" class="select-node" node="n{{ l.article.id }}">{{ l.article.title }}</a> (Relevance: {{ l.relpercent }}%)</h5>
-            <p>{{ l.article.description|sanitize }}</p>
-          </li>
+          <h5><a href="#" class="select-node" node="n{{ l.article.id }}">{{ l.article.title }}</a> (Relevance: {{ l.relpercent }}%)</h5>
+          <p>{{ l.article.description|sanitize }}</p>
+          <hr />
         {% endfor %}
-        </ul>
       </div>
-      <div class="foreground mainadd right up nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
+      <div class="foreground mainadd left up nodeinfo n-{{ e.id }} js-scrollbar" node="n-{{ e.id }}">
         <h4>{{ e.name }}</h4>
       </div>
     {% endfor %}
