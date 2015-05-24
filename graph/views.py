@@ -6,7 +6,6 @@ from django.views.generic.list import ListView
 from django.utils import timezone
 
 from graph.models import Website, Article, Concept, ArticleConcept
-from django.db.models import Count
         
 # import the logging library
 import logging
@@ -24,7 +23,6 @@ def tim(t, text):
 
 def graph(request):
     from .helpers import to_dict, to_json
-    import time
     t=time.time()
     concept_type = {
         "id": 0, 

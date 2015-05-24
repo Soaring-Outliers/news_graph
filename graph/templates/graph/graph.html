@@ -73,10 +73,11 @@
           <p>
             Common tags:
             {% for c in linked_concepts %}
-            <a href="#" class="select-node" node="n-{{ c.id }}">{{ c.name }}</a>
-            {% if not forloop.last %}
-            & 
-            {% endif %}
+              <a href="#" class="select-node" node="n-{{ c.id }}">{{ c.name }}</a>
+              
+              {% if not forloop.last %}
+              & 
+              {% endif %}
             {% endfor %}
           </p>
           <hr />

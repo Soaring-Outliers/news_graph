@@ -108,9 +108,21 @@ from urllib import request
 import xml.etree.ElementTree as ET
 import email.utils, datetime
 from django.core import serializers
-from django.db.models import Count
 
 from progress.bar import Bar
+
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+import time
+def tim(t, text):
+    #logger.error(text)
+    #logger.error(time.time()-t)
+    #time.sleep(3)
+    return time.time()
 
 
 def display_xml(xml_tree):
@@ -296,7 +308,7 @@ class Article(models.Model):
                     relevance = float(node.find('relevance').text)
                     # Fetch or create the Concept of name "text"
                     try:
-                        c = Concept.objects.get(name = text)
+                        c = Concept.all_objects.get(name = text)
                     except Concept.DoesNotExist:
                         c = Concept(name = text)
                         c.save()
@@ -326,11 +338,18 @@ class Article(models.Model):
         articles.sort(key=lambda t: t[0], reverse=True)
         return articles
 
+class WhiteListConceptManager(models.Manager):
+    def get_queryset(self):
+        return super(WhiteListConceptManager, self).get_queryset().filter(blacklisted=False)
 
 class Concept(models.Model):
     articles = models.ManyToManyField(Article, through='ArticleConcept')
     name = models.CharField(max_length=255)
     articles_count = models.IntegerField()
+    blacklisted = models.BooleanField(default=False)
+    
+    objects = WhiteListConceptManager()
+    all_objects = models.Manager()
     
     def __str__(self):
         return self.name
@@ -349,10 +368,17 @@ class Concept(models.Model):
             "display_name": True,
         }
 
+class WhiteListArticleConceptManager(models.Manager):
+    def get_queryset(self):
+        return super(WhiteListArticleConceptManager, self).get_queryset().filter(concept__blacklisted=False)
+        
 class ArticleConcept(models.Model):
     article = models.ForeignKey(Article)
     concept = models.ForeignKey(Concept)
     relevance = models.FloatField()
+    
+    objects = WhiteListArticleConceptManager()
+    all_objects = models.Manager()
     
     def __str__(self):
         return str(self.article) + " <-"+str(self.relevance)+"-> " + str(self.concept)
