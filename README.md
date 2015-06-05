@@ -1,2 +1,2 @@
 # news-graph
-Graph gathering news
+Small project to search dumb news about graphs
